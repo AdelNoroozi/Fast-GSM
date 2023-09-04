@@ -16,7 +16,7 @@ user = sqlalchemy.Table(
     sqlalchemy.Column(
         "modified_at", sqlalchemy.DateTime,
         server_default=sqlalchemy.func.utcnow(),
-        on_update=sqlalchemy.func.utcnow(),
+        onupdate=sqlalchemy.func.utcnow(),
         nullable=False
     )
 )
