@@ -2,7 +2,7 @@ from asyncpg import UniqueViolationError
 from fastapi import HTTPException
 
 from db import database
-from models import mobile
+from models import mobile, brand
 
 
 class MobileManager:
@@ -13,5 +13,6 @@ class MobileManager:
             id_ = await database.execute(query)
         except UniqueViolationError:
             raise HTTPException(400, "mobile already exists")
-        mobile_instance = await database.fetch_one(mobile.select().where(mobile.c.id == id_))
+        retrieve_query = mobile.join(brand, mobile.c.brand_id == brand.c.id).select().where(mobile.c.id == id_)
+        mobile_instance = await database.fetch_one(retrieve_query)
         return mobile_instance
