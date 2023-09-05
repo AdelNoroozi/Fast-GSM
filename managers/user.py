@@ -5,7 +5,7 @@ from db import database
 from managers import AuthManager
 from models import user
 from asyncpg import UniqueViolationError
-pwd_context = context.CryptContext(schemes=["bcrypt"], deprecated=True)
+pwd_context = context.CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class UserManager:
