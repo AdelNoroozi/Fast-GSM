@@ -12,11 +12,11 @@ user = sqlalchemy.Table(
     sqlalchemy.Column("role", sqlalchemy.Enum(RoleEnum), server_default=RoleEnum.observer.name, nullable=False),
     sqlalchemy.Column("phone_number", sqlalchemy.String(20)),
     sqlalchemy.Column("password", sqlalchemy.String(50), nullable=False),
-    sqlalchemy.Column("joined_at", sqlalchemy.DateTime, server_default=sqlalchemy.func.utcnow(), nullable=False),
+    sqlalchemy.Column("joined_at", sqlalchemy.DateTime, server_default=sqlalchemy.func.now(), nullable=False),
     sqlalchemy.Column(
         "modified_at", sqlalchemy.DateTime,
-        server_default=sqlalchemy.func.utcnow(),
-        onupdate=sqlalchemy.func.utcnow(),
+        server_default=sqlalchemy.func.now(),
+        onupdate=sqlalchemy.func.now(),
         nullable=False
     )
 )
