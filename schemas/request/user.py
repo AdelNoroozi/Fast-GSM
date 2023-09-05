@@ -17,3 +17,8 @@ class RegisterModel(BaseModel):
                 "password length must be at least 8 and it must contain at least 1 lowercase letter and 1 number with \
                  no spaces"
             )
+
+
+class LoginModel(BaseModel):
+    email: EmailStr
+    password: str
