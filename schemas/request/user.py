@@ -3,10 +3,9 @@ from pydantic import BaseModel, field_validator, EmailStr
 from schemas import password_schema
 
 
-class RegisterModel(BaseModel):
+class AddUserModel(BaseModel):
     email: EmailStr
     password: str
-    public_name: str
 
     @field_validator("password")
     def validate_password(cls, value):
@@ -19,6 +18,12 @@ class RegisterModel(BaseModel):
             )
 
 
+class RegisterModel(AddUserModel):
+    public_name: str
+
+
 class LoginModel(BaseModel):
     email: EmailStr
     password: str
+
+

@@ -1,13 +1,14 @@
-from fastapi import APIRouter
-from managers import UserManager
-from schemas.request import RegisterModel, LoginModel
+from fastapi import APIRouter, Depends
+
+from managers import UserManager, oauth2_scheme, is_superuser
+from schemas.request import RegisterModel, LoginModel, AddUserModel
 
 router = APIRouter(tags=["Auth"])
 
 
 @router.post("/register/", status_code=201)
 async def register(user_data: RegisterModel):
-    token = await UserManager.register(user_data.model_dump())
+    token = await UserManager.register(user_data.model_dump(), True)
     return {"token": token}
 
 
@@ -15,3 +16,9 @@ async def register(user_data: RegisterModel):
 async def login(user_data: LoginModel):
     token = await UserManager.login(user_data.model_dump())
     return {"token": token}
+
+
+@router.post("/add-admin/", status_code=201, dependencies=[Depends(oauth2_scheme), Depends(is_superuser)])
+async def add_admin(admin_data: AddUserModel):
+    admin = await UserManager.add_admin(admin_data.model_dump())
+    return {"admin": admin}

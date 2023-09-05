@@ -1,6 +1,7 @@
 from managers.auth import AuthManager
 from managers.auth import CustomHTTPBearer
 from managers.auth import is_admin
+from managers.auth import is_superuser
 from managers.auth import oauth2_scheme
 from managers.brand import BrandManager
 from managers.mobile import MobileManager
