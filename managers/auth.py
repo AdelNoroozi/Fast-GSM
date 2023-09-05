@@ -1,14 +1,14 @@
 from datetime import datetime, timedelta
 from typing import Optional
 
-from fastapi import HTTPException
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import jwt
 from decouple import config
+from fastapi import HTTPException
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from starlette.requests import Request
 
 from db import database
-from models import user
+from models import user, RoleEnum
 
 
 class AuthManager:
@@ -36,3 +36,12 @@ class CustomHTTPBearer(HTTPBearer):
             raise HTTPException(401, "expired token")
         except jwt.InvalidTokenError:
             raise HTTPException(401, "invalid token")
+
+
+oauth2_scheme = CustomHTTPBearer()
+
+
+async def is_admin(request: Request):
+    user = request.state.user
+    if not user or (not user["role"] == RoleEnum.admin):
+        raise HTTPException(403, "you don't have permission")
