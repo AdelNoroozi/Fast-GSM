@@ -36,3 +36,11 @@ class UserManager:
         admin_data["role"] = RoleEnum.admin.name
         return await UserManager.register(admin_data, False)
 
+    @staticmethod
+    async def get_user_list(requesting_user):
+        query = user.select()
+        if requesting_user["role"] == RoleEnum.admin:
+            query = query.where(user.c.role == RoleEnum.observer)
+        elif requesting_user["role"] == RoleEnum.observer:
+            query = query.where(user.c.id == requesting_user["id"])
+        return await database.fetch_all(query)
