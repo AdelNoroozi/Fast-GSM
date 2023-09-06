@@ -51,3 +51,9 @@ async def is_superuser(request: Request):
     user = request.state.user
     if not user or (not user["role"] == RoleEnum.superuser):
         raise HTTPException(403, "you don't have permission")
+
+
+async def is_observer(request: Request):
+    user = request.state.user
+    if not user or (not user["role"] == RoleEnum.observer):
+        raise HTTPException(403, "you don't have permission")
