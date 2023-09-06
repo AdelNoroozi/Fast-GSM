@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends
 
 from managers import MobileManager, oauth2_scheme, is_admin
-from schemas.request import CreateMobileModel, RetrieveMobileModel
+from schemas.request import CreateMobileModel
+from schemas.response import RetrieveMobileModel
 
 router = APIRouter(tags=["Mobile"])
 

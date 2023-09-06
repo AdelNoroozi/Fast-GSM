@@ -3,9 +3,8 @@ from datetime import date
 from pydantic import BaseModel, Field
 
 
-class CreateMobileModel(BaseModel):
+class RetrieveMobileModel(BaseModel):
     name: str
     release_date: date
-    brand_id: int
+    brand: str = Field(alias="name_1")
     price: float
-
