@@ -7,3 +7,4 @@ from models.mobile_prop_option import mobile_prop_option
 from models.mobile_photo import mobile_photo
 from models.mobile_prop_selectable_value import mobile_prop_selectable_value
 from models.mobile_prop_input_value import mobile_prop_input_value
+from models.comment import comment
