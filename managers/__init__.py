@@ -6,3 +6,4 @@ from managers.auth import oauth2_scheme
 from managers.brand import BrandManager
 from managers.mobile import MobileManager
 from managers.user import UserManager
+from managers.comment import CommentManager
