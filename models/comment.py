@@ -9,4 +9,5 @@ comment = sqlalchemy.Table(
     sqlalchemy.Column("user_id", sqlalchemy.ForeignKey("users.id"), nullable=False),
     sqlalchemy.Column("mobile_id", sqlalchemy.ForeignKey("mobiles.id"), nullable=False),
     sqlalchemy.Column("text", sqlalchemy.String(256), nullable=False),
+    sqlalchemy.Column("submitted_at", sqlalchemy.DateTime, server_default=sqlalchemy.func.now()),
 )
