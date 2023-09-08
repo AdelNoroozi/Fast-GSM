@@ -11,7 +11,7 @@ class MobileManager:
 
     @classmethod
     def search(cls, query, search_str):
-        return query.where(mobile.c.name.like(f"%{search_str}%"))
+        return query.where(mobile.c.name.ilike(f"%{search_str}%"))
 
     @staticmethod
     async def create_mobile(mobile_data):
