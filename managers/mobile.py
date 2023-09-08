@@ -18,6 +18,9 @@ class MobileManager:
         mobile_by_brand_res = query.where(mobile.c.brand_id.in_(brand_ids))
         return mobile_by_name_res.union(mobile_by_brand_res)
 
+    @classmethod
+    def filter_by_brand(cls, query, brand_id):
+        return query.where(mobile.c.brand_id == brand_id)
 
     @staticmethod
     async def create_mobile(mobile_data):
@@ -42,8 +45,10 @@ class MobileManager:
         return mobile_instance
 
     @staticmethod
-    async def list_mobile(search_str: Optional[str]):
+    async def list_mobile(brand_id: Optional[id], search_str: Optional[str]):
         query = mobile.select()
+        if brand_id:
+            query = MobileManager.filter_by_brand(query, brand_id)
         if search_str:
             query = await MobileManager.search(query, search_str)
         return await database.fetch_all(query)

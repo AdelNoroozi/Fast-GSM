@@ -25,6 +25,6 @@ async def retrieve_mobile(mobile_id: int):
 
 
 @router.get("/mobiles/", response_model=list[BaseGetMobileModel], status_code=200)
-async def list_mobile(search: Optional[str] = None):
-    mobiles = await MobileManager.list_mobile(search)
+async def list_mobile(brand: Optional[int] = None, search: Optional[str] = None, ):
+    mobiles = await MobileManager.list_mobile(brand, search)
     return mobiles
