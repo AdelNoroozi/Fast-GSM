@@ -30,5 +30,5 @@ class MobileManager:
 
     @staticmethod
     async def list_mobile():
-        query = mobile.selecct()
+        query = mobile.select()
         return await database.fetch_all(query)

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from managers import MobileManager, oauth2_scheme, is_admin
 from schemas.request import CreateMobileModel
-from schemas.response import RetrieveMobileModel
+from schemas.response import RetrieveMobileModel, BaseGetMobileModel
 
 router = APIRouter(tags=["Mobile"])
 
@@ -20,3 +20,9 @@ async def retrieve_mobile(mobile_id: int):
     if mobile is None:
         raise HTTPException(404, "mobile not found")
     return mobile
+
+
+@router.get("/mobiles/", response_model=list[BaseGetMobileModel], status_code=200)
+async def list_mobile():
+    mobiles = await MobileManager.list_mobile()
+    return mobiles
