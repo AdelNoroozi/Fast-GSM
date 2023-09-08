@@ -10,8 +10,14 @@ from models import mobile, brand
 class MobileManager:
 
     @classmethod
-    def search(cls, query, search_str):
-        return query.where(mobile.c.name.ilike(f"%{search_str}%"))
+    async def search(cls, query, search_str):
+        mobile_by_name_res = query.where(mobile.c.name.ilike(f"%{search_str}%"))
+        brands_query = brand.select().where(brand.c.name.ilike(f"%{search_str}%"))
+        brands = await database.fetch_all(brands_query)
+        brand_ids = [b["id"] for b in brands]
+        mobile_by_brand_res = query.where(mobile.c.brand_id.in_(brand_ids))
+        return mobile_by_name_res.union(mobile_by_brand_res)
+
 
     @staticmethod
     async def create_mobile(mobile_data):
@@ -39,5 +45,5 @@ class MobileManager:
     async def list_mobile(search_str: Optional[str]):
         query = mobile.select()
         if search_str:
-            query = MobileManager.search(query, search_str)
+            query = await MobileManager.search(query, search_str)
         return await database.fetch_all(query)
