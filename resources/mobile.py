@@ -1,3 +1,5 @@
+from typing import Optional
+
 from fastapi import APIRouter, Depends, HTTPException
 
 from managers import MobileManager, oauth2_scheme, is_admin
@@ -23,6 +25,6 @@ async def retrieve_mobile(mobile_id: int):
 
 
 @router.get("/mobiles/", response_model=list[BaseGetMobileModel], status_code=200)
-async def list_mobile():
-    mobiles = await MobileManager.list_mobile()
+async def list_mobile(search: Optional[str] = None):
+    mobiles = await MobileManager.list_mobile(search)
     return mobiles

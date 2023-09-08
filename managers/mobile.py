@@ -1,3 +1,5 @@
+from typing import Optional
+
 from asyncpg import UniqueViolationError, ForeignKeyViolationError
 from fastapi import HTTPException
 
@@ -6,6 +8,11 @@ from models import mobile, brand
 
 
 class MobileManager:
+
+    @classmethod
+    def search(cls, query, search_str):
+        return query.where(mobile.c.name.like(f"%{search_str}%"))
+
     @staticmethod
     async def create_mobile(mobile_data):
         try:
@@ -29,6 +36,8 @@ class MobileManager:
         return mobile_instance
 
     @staticmethod
-    async def list_mobile():
+    async def list_mobile(search_str: Optional[str]):
         query = mobile.select()
+        if search_str:
+            query = MobileManager.search(query, search_str)
         return await database.fetch_all(query)
