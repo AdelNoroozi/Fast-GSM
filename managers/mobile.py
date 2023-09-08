@@ -18,3 +18,12 @@ class MobileManager:
         retrieve_query = mobile.join(brand, mobile.c.brand_id == brand.c.id).select().where(mobile.c.id == id_)
         mobile_instance = await database.fetch_one(retrieve_query)
         return mobile_instance
+
+    @staticmethod
+    async def retrieve_mobile(mobile_id):
+        try:
+            query = mobile.join(brand, mobile.c.brand_id == brand.c.id).select().where(mobile.c.id == mobile_id)
+        except Exception as e:
+            raise e
+        mobile_instance = await database.fetch_one(query)
+        return mobile_instance
