@@ -27,3 +27,8 @@ class MobileManager:
             raise e
         mobile_instance = await database.fetch_one(query)
         return mobile_instance
+
+    @staticmethod
+    async def list_mobile():
+        query = mobile.selecct()
+        return await database.fetch_all(query)
