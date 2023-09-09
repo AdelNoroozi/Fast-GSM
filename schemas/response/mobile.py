@@ -13,3 +13,4 @@ class RetrieveMobileModel(BaseModel):
     release_date: date
     brand: str = Field(alias="name_1")
     price: float
+    comments: list

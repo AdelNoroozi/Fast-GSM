@@ -4,7 +4,8 @@ from asyncpg import UniqueViolationError, ForeignKeyViolationError
 from fastapi import HTTPException
 
 from db import database
-from models import mobile, brand
+from models import mobile, brand, comment, user
+from schemas.response import BaseCommentModel
 
 
 class MobileManager:
@@ -21,6 +22,12 @@ class MobileManager:
     @classmethod
     def filter_by_brand(cls, query, brand_id):
         return query.where(mobile.c.brand_id == brand_id)
+
+    @classmethod
+    async def get_comments(cls, mobile_id):
+        query = comment.join(user, user.c.id == comment.c.user_id).select().where(mobile.c.id == mobile_id)
+        comments = await database.fetch_all(query)
+        return [BaseCommentModel(**c) for c in comments]
 
     @staticmethod
     async def create_mobile(mobile_data):
@@ -41,8 +48,10 @@ class MobileManager:
             query = mobile.join(brand, mobile.c.brand_id == brand.c.id).select().where(mobile.c.id == mobile_id)
         except Exception as e:
             raise e
-        mobile_instance = await database.fetch_one(query)
-        return mobile_instance
+        mobile_data = dict(await database.fetch_one(query))
+        comments = await MobileManager.get_comments(mobile_id)
+        mobile_data["comments"] = comments
+        return mobile_data
 
     @staticmethod
     async def list_mobile(brand_id: Optional[id], search_str: Optional[str]):
