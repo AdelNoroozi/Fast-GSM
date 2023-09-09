@@ -8,3 +8,4 @@ from managers.brand import BrandManager
 from managers.mobile import MobileManager
 from managers.user import UserManager
 from managers.comment import CommentManager
+from managers.mobile_prop import MobilePropManager
