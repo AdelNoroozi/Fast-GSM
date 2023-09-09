@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field
 
 
 class BaseGetMobileModel(BaseModel):
+    id: int
     name: str
     price: float
 

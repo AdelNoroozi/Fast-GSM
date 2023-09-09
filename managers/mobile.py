@@ -25,10 +25,9 @@ class MobileManager:
 
     @classmethod
     async def get_comments(cls, mobile_id):
-        query = comment.join(user, user.c.id == comment.c.user_id).select().where(mobile.c.id == mobile_id)
+        query = comment.join(user, user.c.id == comment.c.user_id).select().where(comment.c.mobile_id == mobile_id)
         comments = await database.fetch_all(query)
         return [BaseCommentModel(**c) for c in comments]
-
 
     @classmethod
     async def get_props(cls, mobile_id):
@@ -43,8 +42,6 @@ class MobileManager:
             prop_key = await database.fetch_one(prop_query)
             props[prop_key["prop"]] = prop_value["value"]
         return props
-
-
 
     @staticmethod
     async def create_mobile(mobile_data):
