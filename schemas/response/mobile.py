@@ -14,3 +14,4 @@ class RetrieveMobileModel(BaseModel):
     brand: str = Field(alias="name_1")
     price: float
     comments: list
+    props: dict

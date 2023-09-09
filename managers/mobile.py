@@ -4,7 +4,7 @@ from asyncpg import UniqueViolationError, ForeignKeyViolationError
 from fastapi import HTTPException
 
 from db import database
-from models import mobile, brand, comment, user
+from models import mobile, brand, comment, user, mobile_prop_selectable_value, mobile_prop_option, mobile_prop
 from schemas.response import BaseCommentModel
 
 
@@ -29,6 +29,23 @@ class MobileManager:
         comments = await database.fetch_all(query)
         return [BaseCommentModel(**c) for c in comments]
 
+
+    @classmethod
+    async def get_props(cls, mobile_id):
+        query = mobile_prop_selectable_value.select().where(
+            mobile_prop_selectable_value.c.mobile_id == mobile_id)
+        mobile_prop_selectable_values = await database.fetch_all(query)
+        props = {}
+        for mpsv in mobile_prop_selectable_values:
+            prop_value_query = mobile_prop_option.select().where(mobile_prop_option.c.id == mpsv["prop_value_id"])
+            prop_value = await database.fetch_one(prop_value_query)
+            prop_query = mobile_prop.select().where(mobile_prop.c.id == prop_value["prop_id"])
+            prop_key = await database.fetch_one(prop_query)
+            props[prop_key["prop"]] = prop_value["value"]
+        return props
+
+
+
     @staticmethod
     async def create_mobile(mobile_data):
         try:
@@ -51,6 +68,8 @@ class MobileManager:
         mobile_data = dict(await database.fetch_one(query))
         comments = await MobileManager.get_comments(mobile_id)
         mobile_data["comments"] = comments
+        props = await MobileManager.get_props(mobile_id)
+        mobile_data["props"] = props
         return mobile_data
 
     @staticmethod
