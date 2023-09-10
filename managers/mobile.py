@@ -5,7 +5,7 @@ from fastapi import HTTPException
 
 from db import database
 from models import mobile, brand, comment, user, mobile_prop_selectable_value, mobile_prop_option, mobile_prop
-from schemas.response import BaseCommentModel
+from schemas.response import BaseCommentModel, BaseGetMobileModel
 
 
 class MobileManager:
@@ -95,10 +95,17 @@ class MobileManager:
         return mobile_data
 
     @staticmethod
-    async def list_mobile(brand_id: Optional[id], search_str: Optional[str]):
+    async def list_mobile(brand_id: Optional[id], search_str: Optional[str], requesting_user_id: Optional[int] = None):
+        from managers import LikeManager
         query = mobile.select()
         if brand_id:
             query = MobileManager.filter_by_brand(query, brand_id)
         if search_str:
             query = await MobileManager.search(query, search_str)
-        return await database.fetch_all(query)
+        mobiles = await database.fetch_all(query)
+        mobile_datas = []
+        for mobile_instance in mobiles:
+            mobile_data = dict(mobile_instance)
+            mobile_data["is_liked_by_user"] = await LikeManager.is_liked_by_user(mobile_data["id"], requesting_user_id)
+            mobile_datas.append(mobile_data)
+        return mobile_datas

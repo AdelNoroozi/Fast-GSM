@@ -1,6 +1,5 @@
 from typing import Optional
 
-
 from fastapi import APIRouter, Depends, HTTPException
 from starlette.requests import Request
 
@@ -24,7 +23,7 @@ async def retrieve_mobile(mobile_id: int, request: Request):
     try:
         user = request.state.user
     except AttributeError:
-        mobile = await MobileManager.retrieve_mobile(mobile_id, None)
+        mobile = await MobileManager.retrieve_mobile(mobile_id)
     else:
         mobile = await MobileManager.retrieve_mobile(mobile_id, user["id"])
     if mobile is None:
@@ -32,7 +31,12 @@ async def retrieve_mobile(mobile_id: int, request: Request):
     return mobile
 
 
-@router.get("/mobiles/", response_model=list[BaseGetMobileModel], status_code=200)
-async def list_mobile(brand: Optional[int] = None, search: Optional[str] = None, ):
-    mobiles = await MobileManager.list_mobile(brand, search)
+@router.get("/mobiles/", status_code=200, dependencies=[Depends(oauth2_scheme_unprotected)])
+async def list_mobile(request: Request, brand: Optional[int] = None, search: Optional[str] = None):
+    try:
+        user = request.state.user
+    except AttributeError:
+        mobiles = await MobileManager.list_mobile(brand, search)
+    else:
+        mobiles = await MobileManager.list_mobile(brand, search, user["id"])
     return mobiles
