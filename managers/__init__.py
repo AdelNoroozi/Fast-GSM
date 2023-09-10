@@ -10,3 +10,4 @@ from managers.user import UserManager
 from managers.comment import CommentManager
 from managers.mobile_prop import MobilePropManager
 from managers.like import LikeManager
+from managers.save import SaveManager
