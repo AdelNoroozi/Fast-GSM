@@ -5,7 +5,9 @@ import jwt
 from decouple import config
 from fastapi import HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security.utils import get_authorization_scheme_param
 from starlette.requests import Request
+from starlette.status import HTTP_403_FORBIDDEN
 
 from db import database
 from models import user, RoleEnum
@@ -24,7 +26,7 @@ class AuthManager:
             raise e
 
 
-class CustomHTTPBearer(HTTPBearer):
+class ProtectedHTTPBearer(HTTPBearer):
     async def __call__(self, request: Request) -> Optional[HTTPAuthorizationCredentials]:
         res = await super().__call__(request)
         try:
@@ -38,7 +40,34 @@ class CustomHTTPBearer(HTTPBearer):
             raise HTTPException(401, "invalid token")
 
 
-oauth2_scheme = CustomHTTPBearer()
+class UnprotectedHTTPBearer(HTTPBearer):
+    async def __call__(self, request: Request) -> Optional[HTTPAuthorizationCredentials]:
+        authorization = request.headers.get("Authorization")
+        scheme, credentials = get_authorization_scheme_param(authorization)
+        if not (authorization and scheme and credentials):
+            return None
+        if scheme.lower() != "bearer":
+            if self.auto_error:
+                raise HTTPException(
+                    status_code=HTTP_403_FORBIDDEN,
+                    detail="Invalid authentication credentials",
+                )
+            else:
+                return None
+        res = HTTPAuthorizationCredentials(scheme=scheme, credentials=credentials)
+        try:
+            payload = jwt.decode(res.credentials, config("JWT_SECRET_KEY"), algorithms=["HS256"])
+            user_instance = await database.fetch_one(user.select().where(user.c.id == payload["sub"]))
+            request.state.user = user_instance
+            return user_instance
+        except jwt.ExpiredSignatureError:
+            raise HTTPException(401, "expired token")
+        except jwt.InvalidTokenError:
+            raise HTTPException(401, "invalid token")
+
+
+oauth2_scheme = ProtectedHTTPBearer()
+oauth2_scheme_unprotected = UnprotectedHTTPBearer()
 
 
 async def is_admin(request: Request):

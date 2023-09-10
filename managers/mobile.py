@@ -89,7 +89,7 @@ class MobileManager:
             raise HTTPException(404, "mobile not found")
         await MobileManager.update_mobile_views(mobile_instance["id"])
         mobile_data = dict(mobile_instance)
-        mobile_data["likes"] = await LikeManager.is_liked_by_user(mobile_id, requesting_user_id)
+        mobile_data["is_liked_by_user"] = await LikeManager.is_liked_by_user(mobile_id, requesting_user_id)
         mobile_data["comments"] = await MobileManager.get_comments(mobile_id)
         mobile_data["props"] = await MobileManager.get_props(mobile_id)
         return mobile_data
