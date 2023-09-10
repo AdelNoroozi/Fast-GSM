@@ -10,4 +10,6 @@ mobile = sqlalchemy.Table(
     sqlalchemy.Column("brand_id", sqlalchemy.ForeignKey("brands.id"), nullable=False),
     sqlalchemy.Column("price", sqlalchemy.Float, nullable=False),
     sqlalchemy.Column("views", sqlalchemy.Integer, nullable=False, server_default='0'),
+    sqlalchemy.Column("likes_count", sqlalchemy.Integer, nullable=False, server_default='0'),
+    sqlalchemy.Column("comments_count", sqlalchemy.Integer, nullable=False, server_default='0'),
 )

@@ -44,9 +44,24 @@ class MobileManager:
         return props
 
     @classmethod
-    async def update_mobile_views(cls, mobile_instance):
+    async def update_mobile_views(cls, mobile_id):
+        mobile_instance = await database.fetch_one(mobile.select().where(mobile.c.id == mobile_id))
         query = mobile.update().where(mobile.c.id == mobile_instance["id"]).values(
             views=mobile_instance["views"] + 1)
+        await database.execute(query)
+
+    @classmethod
+    async def update_mobile_comments_count(cls, mobile_id):
+        mobile_instance = await database.fetch_one(mobile.select().where(mobile.c.id == mobile_id))
+        query = mobile.update().where(mobile.c.id == mobile_instance["id"]).values(
+            comments_count=mobile_instance["comments_count"] + 1)
+        await database.execute(query)
+
+    @classmethod
+    async def update_mobile_likes_count(cls, mobile_id, value):
+        mobile_instance = await database.fetch_one(mobile.select().where(mobile.c.id == mobile_id))
+        query = mobile.update().where(mobile.c.id == mobile_instance["id"]).values(
+            likes_count=mobile_instance["likes_count"] + value)
         await database.execute(query)
 
     @staticmethod
@@ -71,7 +86,7 @@ class MobileManager:
             raise e
         if not mobile_instance:
             raise HTTPException(404, "mobile not found")
-        await MobileManager.update_mobile_views(mobile_instance)
+        await MobileManager.update_mobile_views(mobile_instance["id"])
         mobile_data = dict(mobile_instance)
         comments = await MobileManager.get_comments(mobile_id)
         mobile_data["comments"] = comments

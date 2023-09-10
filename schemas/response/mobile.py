@@ -8,13 +8,12 @@ class BaseGetMobileModel(BaseModel):
     name: str
     price: float
     views: int
+    likes_count: int
+    comments_count: int
 
 
-class RetrieveMobileModel(BaseModel):
-    name: str
+class RetrieveMobileModel(BaseGetMobileModel):
     release_date: date
     brand: str = Field(alias="name_1")
-    price: float
     comments: list
     props: dict
-    views: int
