@@ -1,8 +1,7 @@
 from fastapi import APIRouter, Depends
 from starlette.requests import Request
 
-from managers import oauth2_scheme, is_observer
-from managers.like import LikeManager
+from managers import oauth2_scheme, is_observer, LikeManager
 from schemas.request import LikeModel
 
 router = APIRouter(tags=["Like"])

@@ -9,4 +9,4 @@ from managers.mobile import MobileManager
 from managers.user import UserManager
 from managers.comment import CommentManager
 from managers.mobile_prop import MobilePropManager
-from managers.like import like
+from managers.like import LikeManager
