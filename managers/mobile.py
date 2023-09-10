@@ -43,6 +43,12 @@ class MobileManager:
             props[prop_key["prop"]] = prop_value["value"]
         return props
 
+    @classmethod
+    async def update_mobile_views(cls, mobile_instance):
+        query = mobile.update().where(mobile.c.id == mobile_instance["id"]).values(
+            views=int(mobile_instance["views"]) + 1)
+        await database.execute(query)
+
     @staticmethod
     async def create_mobile(mobile_data):
         try:
@@ -65,6 +71,7 @@ class MobileManager:
             raise e
         if not mobile_instance:
             raise HTTPException(404, "mobile not found")
+        await MobileManager.update_mobile_views(mobile_instance)
         mobile_data = dict(mobile_instance)
         comments = await MobileManager.get_comments(mobile_id)
         mobile_data["comments"] = comments

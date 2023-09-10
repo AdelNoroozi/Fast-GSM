@@ -9,4 +9,5 @@ mobile = sqlalchemy.Table(
     sqlalchemy.Column("release_date", sqlalchemy.Date, nullable=False),
     sqlalchemy.Column("brand_id", sqlalchemy.ForeignKey("brands.id"), nullable=False),
     sqlalchemy.Column("price", sqlalchemy.Float, nullable=False),
+    sqlalchemy.Column("views", sqlalchemy.Integer, nullable=False, server_default='0'),
 )
