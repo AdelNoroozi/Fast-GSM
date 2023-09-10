@@ -46,7 +46,7 @@ class MobileManager:
     @classmethod
     async def update_mobile_views(cls, mobile_instance):
         query = mobile.update().where(mobile.c.id == mobile_instance["id"]).values(
-            views=int(mobile_instance["views"]) + 1)
+            views=mobile_instance["views"] + 1)
         await database.execute(query)
 
     @staticmethod
