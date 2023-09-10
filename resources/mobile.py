@@ -31,7 +31,8 @@ async def retrieve_mobile(mobile_id: int, request: Request):
     return mobile
 
 
-@router.get("/mobiles/", status_code=200, dependencies=[Depends(oauth2_scheme_unprotected)])
+@router.get("/mobiles/", status_code=200, response_model=list[BaseGetMobileModel],
+            dependencies=[Depends(oauth2_scheme_unprotected)])
 async def list_mobile(request: Request, brand: Optional[int] = None, search: Optional[str] = None):
     try:
         user = request.state.user

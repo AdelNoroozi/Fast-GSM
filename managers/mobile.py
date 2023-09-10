@@ -5,7 +5,7 @@ from fastapi import HTTPException
 
 from db import database
 from models import mobile, brand, comment, user, mobile_prop_selectable_value, mobile_prop_option, mobile_prop
-from schemas.response import BaseCommentModel, BaseGetMobileModel
+from schemas.response import BaseCommentModel
 
 
 class MobileManager:
@@ -80,6 +80,7 @@ class MobileManager:
     @staticmethod
     async def retrieve_mobile(mobile_id, requesting_user_id: Optional[int] = None):
         from managers import LikeManager
+        from managers import SaveManager
         try:
             query = mobile.join(brand, mobile.c.brand_id == brand.c.id).select().where(mobile.c.id == mobile_id)
             mobile_instance = await database.fetch_one(query)
@@ -90,6 +91,7 @@ class MobileManager:
         await MobileManager.update_mobile_views(mobile_instance["id"])
         mobile_data = dict(mobile_instance)
         mobile_data["is_liked_by_user"] = await LikeManager.is_liked_by_user(mobile_id, requesting_user_id)
+        mobile_data["is_saved_by_user"] = await SaveManager.is_saved_by_user(mobile_id, requesting_user_id)
         mobile_data["comments"] = await MobileManager.get_comments(mobile_id)
         mobile_data["props"] = await MobileManager.get_props(mobile_id)
         return mobile_data
@@ -97,6 +99,7 @@ class MobileManager:
     @staticmethod
     async def list_mobile(brand_id: Optional[id], search_str: Optional[str], requesting_user_id: Optional[int] = None):
         from managers import LikeManager
+        from managers import SaveManager
         query = mobile.select()
         if brand_id:
             query = MobileManager.filter_by_brand(query, brand_id)
@@ -107,5 +110,6 @@ class MobileManager:
         for mobile_instance in mobiles:
             mobile_data = dict(mobile_instance)
             mobile_data["is_liked_by_user"] = await LikeManager.is_liked_by_user(mobile_data["id"], requesting_user_id)
+            mobile_data["is_saved_by_user"] = await SaveManager.is_saved_by_user(mobile_data["id"], requesting_user_id)
             mobile_datas.append(mobile_data)
         return mobile_datas

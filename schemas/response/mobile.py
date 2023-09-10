@@ -11,6 +11,7 @@ class BaseGetMobileModel(BaseModel):
     likes_count: int
     comments_count: int
     is_liked_by_user: bool
+    is_saved_by_user: bool
 
 
 class RetrieveMobileModel(BaseGetMobileModel):
