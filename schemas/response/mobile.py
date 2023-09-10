@@ -7,6 +7,7 @@ class BaseGetMobileModel(BaseModel):
     id: int
     name: str
     price: float
+    views: int
 
 
 class RetrieveMobileModel(BaseModel):
@@ -16,3 +17,4 @@ class RetrieveMobileModel(BaseModel):
     price: float
     comments: list
     props: dict
+    views: int
