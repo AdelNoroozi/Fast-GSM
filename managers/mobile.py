@@ -60,9 +60,12 @@ class MobileManager:
     async def retrieve_mobile(mobile_id):
         try:
             query = mobile.join(brand, mobile.c.brand_id == brand.c.id).select().where(mobile.c.id == mobile_id)
+            mobile_instance = await database.fetch_one(query)
         except Exception as e:
             raise e
-        mobile_data = dict(await database.fetch_one(query))
+        if not mobile_instance:
+            raise HTTPException(404, "mobile not found")
+        mobile_data = dict(mobile_instance)
         comments = await MobileManager.get_comments(mobile_id)
         mobile_data["comments"] = comments
         props = await MobileManager.get_props(mobile_id)
