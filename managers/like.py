@@ -11,11 +11,14 @@ class LikeManager:
         like_data["user_id"] = requesting_user["id"]
         try:
             db_like = await database.fetch_one(like.select().where(like.c.user_id == like_data["user_id"],
-                                                                   like.c.mobile_id == like_data["mobile_data"]))
+                                                                   like.c.mobile_id == like_data["mobile_id"]))
             if db_like:
                 query = like.delete().where(like.c.id == db_like["id"])
+                response = "like removed"
             else:
                 query = like.insert().values(**like_data)
+                response = "liked"
+            await database.execute(query)
         except ForeignKeyViolationError:
             raise HTTPException(404, "mobile not found")
-        await database.execute(query)
+        return response
