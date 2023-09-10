@@ -78,7 +78,8 @@ class MobileManager:
         return mobile_instance
 
     @staticmethod
-    async def retrieve_mobile(mobile_id):
+    async def retrieve_mobile(mobile_id, requesting_user_id: Optional[int] = None):
+        from managers import LikeManager
         try:
             query = mobile.join(brand, mobile.c.brand_id == brand.c.id).select().where(mobile.c.id == mobile_id)
             mobile_instance = await database.fetch_one(query)
@@ -88,10 +89,9 @@ class MobileManager:
             raise HTTPException(404, "mobile not found")
         await MobileManager.update_mobile_views(mobile_instance["id"])
         mobile_data = dict(mobile_instance)
-        comments = await MobileManager.get_comments(mobile_id)
-        mobile_data["comments"] = comments
-        props = await MobileManager.get_props(mobile_id)
-        mobile_data["props"] = props
+        mobile_data["likes"] = await LikeManager.is_liked_by_user(mobile_id, requesting_user_id)
+        mobile_data["comments"] = await MobileManager.get_comments(mobile_id)
+        mobile_data["props"] = await MobileManager.get_props(mobile_id)
         return mobile_data
 
     @staticmethod
