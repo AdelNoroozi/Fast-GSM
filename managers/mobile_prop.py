@@ -1,4 +1,5 @@
 from db import database
+from managers import BrandManager
 from models import mobile_prop, mobile_prop_option
 
 
@@ -7,7 +8,7 @@ class MobilePropManager:
     async def get_props():
         query = mobile_prop.select()
         prop_keys = await database.fetch_all(query)
-        props = {}
+        props = {"brand": await BrandManager.list_brand()}
         for prop_key in prop_keys:
             mobile_prop_options_query = mobile_prop_option.select().where(
                 mobile_prop_option.c.prop_id == prop_key["id"])
