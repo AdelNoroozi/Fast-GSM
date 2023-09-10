@@ -18,7 +18,7 @@ class SaveManager:
             else:
                 query = save.insert().values(**save_data)
                 response = "saved"
+            await database.execute(query)
         except ForeignKeyViolationError:
             raise HTTPException(404, "mobile not found")
-        await database.execute(query)
         return response
