@@ -33,11 +33,12 @@ async def retrieve_mobile(mobile_id: int, request: Request):
 
 @router.get("/mobiles/", status_code=200, response_model=list[BaseGetMobileModel],
             dependencies=[Depends(oauth2_scheme_unprotected)])
-async def list_mobile(request: Request, brand: Optional[int] = None, search: Optional[str] = None):
+async def list_mobile(request: Request, brand: Optional[int] = None, search: Optional[str] = None,
+                      order_by: Optional[str] = None):
     try:
         user = request.state.user
     except AttributeError:
-        mobiles = await MobileManager.list_mobile(brand, search)
+        mobiles = await MobileManager.list_mobile(brand, search, order_by)
     else:
-        mobiles = await MobileManager.list_mobile(brand, search, user["id"])
+        mobiles = await MobileManager.list_mobile(brand, search, order_by, user["id"])
     return mobiles

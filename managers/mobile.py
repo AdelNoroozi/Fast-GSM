@@ -2,6 +2,7 @@ from typing import Optional
 
 from asyncpg import UniqueViolationError, ForeignKeyViolationError
 from fastapi import HTTPException
+from sqlalchemy import desc, column
 
 from db import database
 from models import mobile, brand, comment, user, mobile_prop_selectable_value, mobile_prop_option, mobile_prop
@@ -22,6 +23,20 @@ class MobileManager:
     @classmethod
     def filter_by_brand(cls, query, brand_id):
         return query.where(mobile.c.brand_id == brand_id)
+
+    @classmethod
+    def order(cls, query, order_column):
+        first_char = order_column[0]
+        descending = False
+        if first_char == "-":
+            order_column = order_column[1:]
+            descending = True
+        if order_column in ["views", "likes_count", "price", "release_date"]:
+            if descending:
+                query = query.order_by(desc(column(order_column)))
+            else:
+                query = query.order_by(column(order_column))
+        return query
 
     @classmethod
     async def get_comments(cls, mobile_id):
@@ -97,7 +112,8 @@ class MobileManager:
         return mobile_data
 
     @staticmethod
-    async def list_mobile(brand_id: Optional[id], search_str: Optional[str], requesting_user_id: Optional[int] = None):
+    async def list_mobile(brand_id: Optional[id], search_str: Optional[str], order_column: Optional[str],
+                          requesting_user_id: Optional[int] = None):
         from managers import LikeManager
         from managers import SaveManager
         query = mobile.select()
@@ -105,6 +121,8 @@ class MobileManager:
             query = MobileManager.filter_by_brand(query, brand_id)
         if search_str:
             query = await MobileManager.search(query, search_str)
+        if order_column:
+            query = MobileManager.order(query, order_column)
         mobiles = await database.fetch_all(query)
         mobile_datas = []
         for mobile_instance in mobiles:
