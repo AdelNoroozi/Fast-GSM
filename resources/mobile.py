@@ -1,6 +1,6 @@
-from typing import Optional
+from typing import Optional, List
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from starlette.requests import Request
 
 from managers import MobileManager, oauth2_scheme, is_admin, is_authenticated
@@ -13,12 +13,12 @@ router = APIRouter(tags=["Mobile"])
 @router.get("/mobiles/", status_code=200, response_model=list[ListMobileModel],
             dependencies=[Depends(oauth2_scheme)])
 async def list_mobile(request: Request, brand: Optional[int] = None, search: Optional[str] = None,
-                      order_by: Optional[str] = None):
+                      order_by: Optional[str] = None, props: Optional[List[int]] = Query([])):
     user = request.state.user
     if not user:
-        mobiles = await MobileManager.list_mobile(brand, search, order_by)
+        mobiles = await MobileManager.list_mobile(brand, search, props, order_by)
     else:
-        mobiles = await MobileManager.list_mobile(brand, search, order_by, user["id"])
+        mobiles = await MobileManager.list_mobile(brand, search, props, order_by, user["id"])
     return mobiles
 
 

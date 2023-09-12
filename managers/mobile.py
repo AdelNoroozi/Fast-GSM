@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 
 from asyncpg import UniqueViolationError, ForeignKeyViolationError
 from fastapi import HTTPException
@@ -22,6 +22,22 @@ class MobileManager:
     @classmethod
     def filter_by_brand(cls, query, brand_id):
         return query.where(mobile.c.brand_id == brand_id)
+
+    @classmethod
+    async def filter_by_props(cls, query, prop_ids):
+        from managers import MobilePropManager
+        props = await MobilePropManager.get_props_by_ids(prop_ids)
+        counts = {}
+        for prop in props:
+            if prop["mobile_id"] in counts:
+                counts[prop["mobile_id"]] = counts[prop["mobile_id"]] + 1
+            else:
+                counts[prop["mobile_id"]] = 1
+        mobile_ids = []
+        for id_, count in counts.items():
+            if count == len(prop_ids):
+                mobile_ids.append(id_)
+        return query.where(mobile.c.id.in_(mobile_ids))
 
     @classmethod
     def order(cls, query, order_column):
@@ -93,8 +109,8 @@ class MobileManager:
         return mobile_data
 
     @staticmethod
-    async def list_mobile(brand_id: Optional[id], search_str: Optional[str], order_column: Optional[str],
-                          requesting_user_id: Optional[int] = None):
+    async def list_mobile(brand_id: Optional[id], search_str: Optional[str], prop_ids: Optional[list[int]],
+                          order_column: Optional[str], requesting_user_id: Optional[int] = None):
         from managers import LikeManager
         from managers import SaveManager
         query = mobile.select()
@@ -102,8 +118,11 @@ class MobileManager:
             query = MobileManager.filter_by_brand(query, brand_id)
         if search_str:
             query = await MobileManager.search(query, search_str)
+        if prop_ids:
+            query = await MobileManager.filter_by_props(query, prop_ids)
         if order_column:
             query = MobileManager.order(query, order_column)
+
         mobiles = await database.fetch_all(query)
         mobile_datas = []
         for mobile_instance in mobiles:

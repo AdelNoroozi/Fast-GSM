@@ -36,3 +36,8 @@ class MobilePropManager:
                 options.append(option)
             props[prop_key["prop"]] = options
         return props
+
+    @staticmethod
+    async def get_props_by_ids(prop_ids):
+        query = mobile_prop_selectable_value.select().where(mobile_prop_selectable_value.c.prop_value_id.in_(prop_ids))
+        return await database.fetch_all(query)
