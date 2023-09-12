@@ -2,7 +2,7 @@ from typing import Optional, List
 
 from asyncpg import UniqueViolationError, ForeignKeyViolationError
 from fastapi import HTTPException
-from sqlalchemy import desc, column
+from sqlalchemy import desc, column, or_
 
 import schemas.response
 from db import database
@@ -15,12 +15,15 @@ class MobileManager:
 
     @classmethod
     async def search(cls, query, search_str):
-        mobile_by_name_res = query.where(mobile.c.name.ilike(f"%{search_str}%"))
+        # Create conditions for searching by name and by brand
+        name_condition = mobile.c.name.ilike(f"%{search_str}%")
         brands_query = brand.select().where(brand.c.name.ilike(f"%{search_str}%"))
         brands = await database.fetch_all(brands_query)
         brand_ids = [b["id"] for b in brands]
-        mobile_by_brand_res = query.where(mobile.c.brand_id.in_(brand_ids))
-        return mobile_by_name_res.union(mobile_by_brand_res)
+        brand_condition = mobile.c.brand_id.in_(brand_ids)
+        search_condition = or_(name_condition, brand_condition)
+        mobile_by_name_res = query.where(search_condition)
+        return mobile_by_name_res
 
     @classmethod
     def filter_by_brand(cls, query, brand_id):
