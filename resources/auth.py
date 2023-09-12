@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from starlette.requests import Request
 
-from managers import UserManager, oauth2_scheme, is_superuser
+from managers import UserManager, oauth2_scheme, is_superuser, is_authenticated
 from schemas.request import RegisterModel, LoginModel, AddUserModel
 from schemas.response import UserListModel
 
@@ -26,7 +26,8 @@ async def add_admin(admin_data: AddUserModel):
     return {"admin": admin}
 
 
-@router.get("/users/", status_code=200, response_model=list[UserListModel], dependencies=[Depends(oauth2_scheme)])
+@router.get("/users/", status_code=200, response_model=list[UserListModel],
+            dependencies=[Depends(oauth2_scheme), Depends(is_authenticated)])
 async def get_user_list(request: Request):
     user = request.state.user
     return await UserManager.get_user_list(user)

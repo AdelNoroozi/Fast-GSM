@@ -40,11 +40,12 @@ class ProtectedHTTPBearer(HTTPBearer):
             raise HTTPException(401, "invalid token")
 
 
-class UnprotectedHTTPBearer(HTTPBearer):
+class CustomHTTPBearer(HTTPBearer):
     async def __call__(self, request: Request) -> Optional[HTTPAuthorizationCredentials]:
         authorization = request.headers.get("Authorization")
         scheme, credentials = get_authorization_scheme_param(authorization)
         if not (authorization and scheme and credentials):
+            request.state.user = None
             return None
         if scheme.lower() != "bearer":
             if self.auto_error:
@@ -66,8 +67,13 @@ class UnprotectedHTTPBearer(HTTPBearer):
             raise HTTPException(401, "invalid token")
 
 
-oauth2_scheme = ProtectedHTTPBearer()
-oauth2_scheme_unprotected = UnprotectedHTTPBearer()
+oauth2_scheme = CustomHTTPBearer()
+
+
+async def is_authenticated(request: Request):
+    user = request.state.user
+    if not user:
+        raise HTTPException(403, "you don't have permission")
 
 
 async def is_admin(request: Request):

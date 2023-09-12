@@ -8,7 +8,6 @@ from models import RoleEnum
 
 class UserListModel(BaseModel):
     email: EmailStr
-    password: str
     public_name: Optional[str]
     role: Optional[RoleEnum]
     phone_number: Optional[str]

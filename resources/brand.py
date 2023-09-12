@@ -15,5 +15,5 @@ async def create_brand(brand_data: BrandModel):
 
 
 @router.get("/brands/", status_code=200, response_model=list[BrandListModel])
-async def create_brand():
+async def list_brand():
     return await BrandManager.list_brand()
