@@ -5,8 +5,7 @@ from fastapi import HTTPException
 from sqlalchemy import desc, column
 
 from db import database
-from models import mobile, brand, comment, user, mobile_prop_selectable_value, mobile_prop_option, mobile_prop
-from schemas.response import BaseCommentModel
+from models import mobile, brand
 
 
 class MobileManager:
@@ -113,3 +112,11 @@ class MobileManager:
             mobile_data["is_saved_by_user"] = await SaveManager.is_saved_by_user(mobile_data["id"], requesting_user_id)
             mobile_datas.append(mobile_data)
         return mobile_datas
+
+    @staticmethod
+    async def get_saved_mobiles(user_id):
+        from managers import SaveManager
+        saves = await SaveManager.get_saves_by_user(user_id)
+        mobile_ids = [s["mobile_id"] for s in saves]
+        query = mobile.select().where(mobile.c.id.in_(mobile_ids))
+        return await database.fetch_all(query)

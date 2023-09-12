@@ -10,11 +10,14 @@ class BaseGetMobileModel(BaseModel):
     views: int
     likes_count: int
     comments_count: int
+
+
+class ListMobileModel(BaseGetMobileModel):
     is_liked_by_user: bool
     is_saved_by_user: bool
 
 
-class RetrieveMobileModel(BaseGetMobileModel):
+class RetrieveMobileModel(ListMobileModel):
     release_date: date
     brand: str = Field(alias="name_1")
     comments: list

@@ -9,6 +9,12 @@ from asyncpg import ForeignKeyViolationError
 
 class SaveManager:
     @classmethod
+    async def get_saves_by_user(cls, user_id):
+        query = save.select().where(save.c.user_id == user_id)
+        saves = await database.fetch_all(query)
+        return saves
+
+    @classmethod
     async def is_saved_by_user(cls, mobile_id, user_id: Optional[int]):
         if not user_id:
             return False
