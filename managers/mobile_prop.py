@@ -22,7 +22,7 @@ class MobilePropManager:
     async def get_props():
         query = mobile_prop.select()
         prop_keys = await database.fetch_all(query)
-        props = {"brand": await BrandManager.list_brand()}
+        props = {"brand": await BrandManager.list_brand_for_filter()}
         for prop_key in prop_keys:
             mobile_prop_options_query = mobile_prop_option.select().where(
                 mobile_prop_option.c.prop_id == prop_key["id"])

@@ -1,3 +1,4 @@
+from sqlalchemy import select
 from asyncpg import UniqueViolationError
 from fastapi import HTTPException
 
@@ -19,4 +20,9 @@ class BrandManager:
     @staticmethod
     async def list_brand():
         query = brand.select()
+        return await database.fetch_all(query)
+
+    @staticmethod
+    async def list_brand_for_filter():
+        query = select([brand.c.id, brand.c.name.label("option"), brand.c.logo_url])
         return await database.fetch_all(query)
