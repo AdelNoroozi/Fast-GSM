@@ -4,8 +4,11 @@ from asyncpg import UniqueViolationError, ForeignKeyViolationError
 from fastapi import HTTPException
 from sqlalchemy import desc, column
 
+import schemas.response
 from db import database
+from managers import BrandManager
 from models import mobile, brand
+from schemas.response import BrandListModel
 
 
 class MobileManager:
@@ -94,7 +97,7 @@ class MobileManager:
         from managers import MobilePropManager
         from managers import CommentManager
         try:
-            query = mobile.join(brand, mobile.c.brand_id == brand.c.id).select().where(mobile.c.id == mobile_id)
+            query = mobile.select().where(mobile.c.id == mobile_id)
             mobile_instance = await database.fetch_one(query)
         except Exception as e:
             raise e
@@ -102,6 +105,7 @@ class MobileManager:
             raise HTTPException(404, "mobile not found")
         await MobileManager.update_mobile_views(mobile_instance["id"])
         mobile_data = dict(mobile_instance)
+        mobile_data["brand"] = dict(await BrandManager.get_brand_by_id(mobile_data["brand_id"]))
         mobile_data["is_liked_by_user"] = await LikeManager.is_liked_by_user(mobile_id, requesting_user_id)
         mobile_data["is_saved_by_user"] = await SaveManager.is_saved_by_user(mobile_id, requesting_user_id)
         mobile_data["comments"] = await CommentManager.get_comments_by_mobile(mobile_id)

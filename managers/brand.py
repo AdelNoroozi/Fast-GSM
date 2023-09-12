@@ -26,3 +26,8 @@ class BrandManager:
     async def list_brand_for_filter():
         query = select([brand.c.id, brand.c.name.label("option"), brand.c.logo_url])
         return await database.fetch_all(query)
+
+    @staticmethod
+    async def get_brand_by_id(brand_id):
+        query = brand.select().where(brand.c.id == brand_id)
+        return await database.fetch_one(query)

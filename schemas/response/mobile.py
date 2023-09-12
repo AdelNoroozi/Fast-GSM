@@ -27,6 +27,6 @@ class CreateResponseMobileModel(BaseGetMobileModel):
 
 class RetrieveMobileModel(ListMobileModel):
     release_date: date
-    brand: str = Field(alias="name_1")
+    brand: dict
     comments: list
     props: dict
