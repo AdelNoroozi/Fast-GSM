@@ -15,7 +15,6 @@ class MobileManager:
 
     @classmethod
     async def search(cls, query, search_str):
-        # Create conditions for searching by name and by brand
         name_condition = mobile.c.name.ilike(f"%{search_str}%")
         brands_query = brand.select().where(brand.c.name.ilike(f"%{search_str}%"))
         brands = await database.fetch_all(brands_query)
@@ -31,19 +30,22 @@ class MobileManager:
 
     @classmethod
     async def filter_by_props(cls, query, prop_ids):
-        from managers import MobilePropManager
-        props = await MobilePropManager.get_props_by_ids(prop_ids)
-        counts = {}
-        for prop in props:
-            if prop["mobile_id"] in counts:
-                counts[prop["mobile_id"]] = counts[prop["mobile_id"]] + 1
-            else:
-                counts[prop["mobile_id"]] = 1
-        mobile_ids = []
-        for id_, count in counts.items():
-            if count == len(prop_ids):
-                mobile_ids.append(id_)
-        return query.where(mobile.c.id.in_(mobile_ids))
+        pass
+        # from managers import MobilePropManager
+        # prop_value_data = await MobilePropManager.get_mapped_props_by_ids(prop_ids)
+        # mapped_props["pro"]
+        # counts = {}
+        # for prop, prop_options in mapped_props.items():
+        #
+        # #     if prop_value["mobile_id"] in counts:
+        # #         counts[prop["mobile_id"]] = counts[prop["mobile_id"]] + 1
+        # #     else:
+        # #         counts[prop["mobile_id"]] = 1
+        # # mobile_ids = []
+        # # for id_, count in counts.items():
+        # #     if count == len(prop_ids):
+        # #         mobile_ids.append(id_)
+        # return query.where(mobile.c.id.in_(mobile_ids))
 
     @classmethod
     def order(cls, query, order_column):
