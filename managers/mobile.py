@@ -31,17 +31,17 @@ class MobileManager:
     @classmethod
     async def filter_by_props(cls, query, prop_ids):
         from managers import MobilePropManager
-        prop_data = await MobilePropManager.get_mapped_props_by_ids(prop_ids)
+        prop_data = await MobilePropManager.get_props_by_ids(prop_ids)
+        prop_values = prop_data["prop_values"]
         counts = {}
-        for prop_id, prop_value_objects in prop_data.items():
-            for prop_value_object in prop_value_objects:
-                if prop_value_object["mobile_id"] in counts:
-                    counts[prop_value_object["mobile_id"]] = counts[prop_value_object["mobile_id"]] + 1
-                else:
-                    counts[prop_value_object["mobile_id"]] = 1
+        for prop_value in prop_values:
+            if prop_value["mobile_id"] in counts:
+                counts[prop_value["mobile_id"]] = counts[prop_value["mobile_id"]] + 1
+            else:
+                counts[prop_value["mobile_id"]] = 1
         mobile_ids = []
         for id_, count in counts.items():
-            if count == len(prop_data):
+            if count == prop_data["prop_count"]:
                 mobile_ids.append(id_)
         return query.where(mobile.c.id.in_(mobile_ids))
 
