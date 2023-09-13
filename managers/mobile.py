@@ -30,22 +30,20 @@ class MobileManager:
 
     @classmethod
     async def filter_by_props(cls, query, prop_ids):
-        pass
-        # from managers import MobilePropManager
-        # prop_value_data = await MobilePropManager.get_mapped_props_by_ids(prop_ids)
-        # mapped_props["pro"]
-        # counts = {}
-        # for prop, prop_options in mapped_props.items():
-        #
-        # #     if prop_value["mobile_id"] in counts:
-        # #         counts[prop["mobile_id"]] = counts[prop["mobile_id"]] + 1
-        # #     else:
-        # #         counts[prop["mobile_id"]] = 1
-        # # mobile_ids = []
-        # # for id_, count in counts.items():
-        # #     if count == len(prop_ids):
-        # #         mobile_ids.append(id_)
-        # return query.where(mobile.c.id.in_(mobile_ids))
+        from managers import MobilePropManager
+        prop_data = await MobilePropManager.get_mapped_props_by_ids(prop_ids)
+        counts = {}
+        for prop_id, prop_value_objects in prop_data.items():
+            for prop_value_object in prop_value_objects:
+                if prop_value_object["mobile_id"] in counts:
+                    counts[prop_value_object["mobile_id"]] = counts[prop_value_object["mobile_id"]] + 1
+                else:
+                    counts[prop_value_object["mobile_id"]] = 1
+        mobile_ids = []
+        for id_, count in counts.items():
+            if count == len(prop_data):
+                mobile_ids.append(id_)
+        return query.where(mobile.c.id.in_(mobile_ids))
 
     @classmethod
     def order(cls, query, order_column):
