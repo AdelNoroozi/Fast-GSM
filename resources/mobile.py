@@ -36,6 +36,13 @@ async def list_saved_mobiles(request: Request):
     return await MobileManager.get_saved_mobiles(user["id"])
 
 
+@router.get("/mobiles/liked/", status_code=200, response_model=list[BaseGetMobileModel],
+            dependencies=[Depends(oauth2_scheme), Depends(is_authenticated)])
+async def list_liked_mobiles(request: Request):
+    user = request.state.user
+    return await MobileManager.get_liked_mobiles(user["id"])
+
+
 @router.get("/mobiles/{mobile_id}/", response_model=RetrieveMobileModel, response_model_by_alias=False, status_code=200,
             dependencies=[Depends(oauth2_scheme)])
 async def retrieve_mobile(mobile_id: int, request: Request):

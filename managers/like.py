@@ -1,14 +1,20 @@
 from typing import Optional
 
+from asyncpg import ForeignKeyViolationError
 from fastapi import HTTPException
 
 from db import database
 from managers import MobileManager
 from models import like
-from asyncpg import ForeignKeyViolationError
 
 
 class LikeManager:
+    @classmethod
+    async def get_likes_by_user(cls, user_id):
+        query = like.select().where(like.c.user_id == user_id)
+        likes = await database.fetch_all(query)
+        return likes
+
     @classmethod
     async def is_liked_by_user(cls, mobile_id, user_id: Optional[int]):
         if not user_id:

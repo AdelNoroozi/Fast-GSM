@@ -146,3 +146,12 @@ class MobileManager:
         mobile_ids = [s["mobile_id"] for s in saves]
         query = mobile.select().where(mobile.c.id.in_(mobile_ids))
         return await database.fetch_all(query)
+
+    @staticmethod
+    async def get_liked_mobiles(user_id):
+        from managers import LikeManager
+        likes = await LikeManager.get_likes_by_user(user_id)
+        mobile_ids = [s["mobile_id"] for s in likes]
+        query = mobile.select().where(mobile.c.id.in_(mobile_ids))
+        return await database.fetch_all(query)
+
