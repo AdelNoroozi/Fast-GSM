@@ -9,16 +9,20 @@ from schemas.response import RetrieveMobileModel, BaseGetMobileModel, ListMobile
 
 router = APIRouter(tags=["Mobile"])
 
+MIN_PRICE_VALUE = 0
+MAX_PRICE_VALUE = 10000
+
 
 @router.get("/mobiles/", status_code=200, response_model=list[ListMobileModel],
             dependencies=[Depends(oauth2_scheme)])
 async def list_mobile(request: Request, brand: Optional[int] = None, search: Optional[str] = None,
-                      order_by: Optional[str] = None, props: Optional[List[int]] = Query([])):
+                      order_by: Optional[str] = None, props: Optional[List[int]] = Query([]),
+                      price_gt: Optional[float] = MIN_PRICE_VALUE, price_lt: Optional[float] = MAX_PRICE_VALUE):
     user = request.state.user
     if not user:
-        mobiles = await MobileManager.list_mobile(brand, search, props, order_by)
+        mobiles = await MobileManager.list_mobile(brand, search, props, order_by, price_gt, price_lt)
     else:
-        mobiles = await MobileManager.list_mobile(brand, search, props, order_by, user["id"])
+        mobiles = await MobileManager.list_mobile(brand, search, props, order_by, price_gt, price_lt, user["id"])
     return mobiles
 
 

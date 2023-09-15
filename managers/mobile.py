@@ -1,14 +1,12 @@
-from typing import Optional, List
+from typing import Optional
 
 from asyncpg import UniqueViolationError, ForeignKeyViolationError
 from fastapi import HTTPException
-from sqlalchemy import desc, column, or_
+from sqlalchemy import desc, column, or_, and_
 
-import schemas.response
 from db import database
 from managers import BrandManager
 from models import mobile, brand
-from schemas.response import BrandListModel
 
 
 class MobileManager:
@@ -27,6 +25,10 @@ class MobileManager:
     @classmethod
     def filter_by_brand(cls, query, brand_id):
         return query.where(mobile.c.brand_id == brand_id)
+
+    @classmethod
+    async def filter_by_price(cls, query, price_gt, price_lt):
+        return query.where(mobile.c.price >= price_gt, mobile.c.price <= price_lt)
 
     @classmethod
     async def filter_by_props(cls, query, prop_ids):
@@ -117,7 +119,8 @@ class MobileManager:
 
     @staticmethod
     async def list_mobile(brand_id: Optional[id], search_str: Optional[str], prop_ids: Optional[list[int]],
-                          order_column: Optional[str], requesting_user_id: Optional[int] = None):
+                          order_column: Optional[str], price_gt: Optional[float], price_lt: Optional[float],
+                          requesting_user_id: Optional[int] = None):
         from managers import LikeManager
         from managers import SaveManager
         query = mobile.select()
@@ -127,6 +130,7 @@ class MobileManager:
             query = await MobileManager.search(query, search_str)
         if prop_ids:
             query = await MobileManager.filter_by_props(query, prop_ids)
+        query = await MobileManager.filter_by_price(query, price_gt=price_gt, price_lt=price_lt)
         if order_column:
             query = MobileManager.order(query, order_column)
 
