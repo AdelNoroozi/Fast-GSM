@@ -4,6 +4,6 @@ from pydantic import BaseModel
 
 
 class CreatePropModel(BaseModel):
-    name: str
+    prop: str
     is_selectable: bool
     options: Optional[list]

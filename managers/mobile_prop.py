@@ -49,16 +49,17 @@ class MobilePropManager:
 
     @staticmethod
     async def create_props(prop_data):
-        prop_query = mobile_prop.insert(**prop_data)
+        options = prop_data.pop("options")
+        prop_query = mobile_prop.insert().values(**prop_data)
         prop_id = await database.execute(prop_query)
         is_selectable = prop_data["is_selectable"]
         prop_data_response = prop_data.copy()
         prop_data_response["id"] = prop_id
         if is_selectable:
-            options = prop_data["options"]
+
             option_ids = []
             for option in options:
-                option_query = mobile_prop_option.values().insert({"prop_id": prop_id, "value": option})
+                option_query = mobile_prop_option.insert().values({"prop_id": prop_id, "value": option})
                 option_id = await database.execute(option_query)
                 option_ids.append(option_id)
             prop_data_response["options"] = option_ids

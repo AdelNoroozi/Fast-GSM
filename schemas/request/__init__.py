@@ -6,4 +6,4 @@ from schemas.request.mobile import CreateMobileModel
 from schemas.request.comment import CreateCommentModel
 from schemas.request.like import LikeModel
 from schemas.request.save import SaveModel
-from schemas.request.prop import CreatePropModel
+from schemas.request.mobile_prop import CreatePropModel
