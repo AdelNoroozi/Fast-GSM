@@ -1,6 +1,6 @@
 from db import database
 from managers import BrandManager
-from models import mobile_prop, mobile_prop_option, mobile_prop_selectable_value
+from models import mobile_prop, mobile_prop_option, mobile_prop_selectable_value, mobile_prop_input_value
 
 
 class MobilePropManager:
@@ -64,3 +64,23 @@ class MobilePropManager:
                 option_ids.append(option_id)
             prop_data_response["options"] = option_ids
         return prop_data_response
+
+    @staticmethod
+    async def create_selectable_prop_values(mobile_id, props):
+        for prop in props:
+            query = mobile_prop_selectable_value.insert().values({
+                "mobile_id": mobile_id,
+                "prop_value_id": prop
+            })
+            await database.execute(query)
+
+    @staticmethod
+    async def create_input_prop_values(mobile_id, input_props):
+        for prop in input_props:
+            query = mobile_prop_input_value.insert().values({
+                "mobile_id": mobile_id,
+                "prop_id": prop["prop_id"],
+                "value": prop["value"],
+            })
+            await database.execute(query)
+

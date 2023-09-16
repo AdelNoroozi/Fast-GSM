@@ -1,6 +1,11 @@
 from datetime import date
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
+
+
+class InputPropModel(BaseModel):
+    prop_id: int
+    value: str
 
 
 class CreateMobileModel(BaseModel):
@@ -8,4 +13,5 @@ class CreateMobileModel(BaseModel):
     release_date: date
     brand_id: int
     price: float
-
+    props: list[int]
+    input_props: list[InputPropModel]

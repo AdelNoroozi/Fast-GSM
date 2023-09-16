@@ -84,6 +84,11 @@ class MobileManager:
 
     @staticmethod
     async def create_mobile(mobile_data):
+        from managers import MobilePropManager
+        print(mobile_data)
+        props = mobile_data.pop("props")
+        input_props = mobile_data.pop("input_props")
+        print(mobile_data)
         try:
             query = mobile.insert().values(**mobile_data)
             id_ = await database.execute(query)
@@ -91,9 +96,9 @@ class MobileManager:
             raise HTTPException(400, "mobile already exists")
         except ForeignKeyViolationError:
             raise HTTPException(404, "brand does not exist")
-        retrieve_query = mobile.join(brand, mobile.c.brand_id == brand.c.id).select().where(mobile.c.id == id_)
-        mobile_instance = await database.fetch_one(retrieve_query)
-        return mobile_instance
+        await MobilePropManager.create_selectable_prop_values(id_, props)
+        await MobilePropManager.create_input_prop_values(id_, input_props)
+        return await MobileManager.retrieve_mobile(id_, None)
 
     @staticmethod
     async def retrieve_mobile(mobile_id, requesting_user_id: Optional[int] = None):

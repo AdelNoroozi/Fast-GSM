@@ -5,7 +5,7 @@ from starlette.requests import Request
 
 from managers import MobileManager, oauth2_scheme, is_admin, is_authenticated
 from schemas.request import CreateMobileModel
-from schemas.response import RetrieveMobileModel, BaseGetMobileModel, ListMobileModel, CreateResponseMobileModel
+from schemas.response import RetrieveMobileModel, BaseGetMobileModel, ListMobileModel
 
 router = APIRouter(tags=["Mobile"])
 
@@ -27,8 +27,7 @@ async def list_mobile(request: Request, brand: Optional[int] = None, search: Opt
     return mobiles
 
 
-@router.post("/mobiles/", status_code=201, response_model=CreateResponseMobileModel, response_model_by_alias=False,
-             dependencies=[Depends(oauth2_scheme), Depends(is_admin)])
+@router.post("/mobiles/", status_code=201, dependencies=[Depends(oauth2_scheme), Depends(is_admin)])
 async def create_mobile(mobile_data: CreateMobileModel):
     mobile = await MobileManager.create_mobile(mobile_data.model_dump())
     return mobile
