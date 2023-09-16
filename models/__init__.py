@@ -10,3 +10,4 @@ from models.mobile_prop_input_value import mobile_prop_input_value
 from models.comment import comment
 from models.like import like
 from models.save import save
+from models.article import article
