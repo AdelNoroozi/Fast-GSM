@@ -27,7 +27,7 @@ async def add_admin(admin_data: AddUserModel):
 
 
 @router.post("/add-blog_author/", status_code=201, dependencies=[Depends(oauth2_scheme), Depends(is_admin)])
-async def add_blog_author(blog_author_data: AddUserModel):
+async def add_blog_author(blog_author_data: RegisterModel):
     blog_author = await UserManager.add_blog_author(blog_author_data.model_dump())
     return {"blog_author": blog_author}
 
