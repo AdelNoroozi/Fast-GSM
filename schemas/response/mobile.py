@@ -27,6 +27,7 @@ class RetrieveMobileModel(ListMobileModel):
     brand: dict
     comments: list
     props: dict
+    input_props: dict
     views: int
     likes_count: int
     comments_count: int

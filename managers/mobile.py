@@ -120,6 +120,7 @@ class MobileManager:
         mobile_data["is_saved_by_user"] = await SaveManager.is_saved_by_user(mobile_id, requesting_user_id)
         mobile_data["comments"] = await CommentManager.get_comments_by_mobile(mobile_id)
         mobile_data["props"] = await MobilePropManager.get_props_by_mobile(mobile_id)
+        mobile_data["input_props"] = await MobilePropManager.get_input_props_by_mobile(mobile_id)
         return mobile_data
 
     @staticmethod
