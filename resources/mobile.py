@@ -1,5 +1,5 @@
 from typing import Optional, List
-
+from fastapi_pagination import Page, paginate
 from fastapi import APIRouter, Depends, HTTPException, Query
 from starlette.requests import Request
 
@@ -13,7 +13,7 @@ MIN_PRICE_VALUE = 0
 MAX_PRICE_VALUE = 10000
 
 
-@router.get("/mobiles/", status_code=200, response_model=list[ListMobileModel],
+@router.get("/mobiles/", status_code=200, response_model=Page[ListMobileModel],
             dependencies=[Depends(oauth2_scheme)])
 async def list_mobile(request: Request, brand: Optional[int] = None, search: Optional[str] = None,
                       order_by: Optional[str] = None, props: Optional[List[int]] = Query([]),
@@ -21,10 +21,10 @@ async def list_mobile(request: Request, brand: Optional[int] = None, search: Opt
                       count: Optional[int] = None):
     user = request.state.user
     if not user:
-        mobiles = await MobileManager.list_mobile(brand, search, props, order_by, price_gt, price_lt, count)
+        mobiles = await MobileManager.list_mobile(brand, search, props, order_by, price_gt, price_lt)
     else:
-        mobiles = await MobileManager.list_mobile(brand, search, props, order_by, price_gt, price_lt, count, user["id"])
-    return mobiles
+        mobiles = await MobileManager.list_mobile(brand, search, props, order_by, price_gt, price_lt, user["id"])
+    return paginate(mobiles)
 
 
 @router.post("/mobiles/", status_code=201, dependencies=[Depends(oauth2_scheme), Depends(is_admin)])

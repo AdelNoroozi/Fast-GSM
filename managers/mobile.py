@@ -129,7 +129,7 @@ class MobileManager:
     @staticmethod
     async def list_mobile(brand_id: Optional[id], search_str: Optional[str], prop_ids: Optional[list[int]],
                           order_column: Optional[str], price_gt: Optional[float], price_lt: Optional[float],
-                          count: Optional[int], requesting_user_id: Optional[int] = None):
+                          requesting_user_id: Optional[int] = None):
         from managers import LikeManager
         from managers import SaveManager
         from managers import MobilePhotoManager
@@ -144,7 +144,7 @@ class MobileManager:
         if order_column:
             query = MobileManager.order(query, order_column)
 
-        mobiles = await database.fetch_all(query.limit(count))
+        mobiles = await database.fetch_all(query)
         mobile_datas = []
         for mobile_instance in mobiles:
             mobile_data = dict(mobile_instance)

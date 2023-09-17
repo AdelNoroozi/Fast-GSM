@@ -2,8 +2,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from db import database
 from resources import api_router
+from fastapi_pagination import add_pagination
 
 app = FastAPI()
+add_pagination(app)
 origins = [
     "http://localhost:3000",
 ]
