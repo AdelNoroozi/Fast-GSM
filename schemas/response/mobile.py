@@ -10,6 +10,7 @@ class BaseGetMobileModel(BaseModel):
 
 
 class ListMobileModel(BaseGetMobileModel):
+    thumbnail: dict
     is_liked_by_user: bool
     is_saved_by_user: bool
 
@@ -22,10 +23,12 @@ class CreateResponseMobileModel(BaseGetMobileModel):
     brand: str = Field(alias="name_1")
 
 
-class RetrieveMobileModel(ListMobileModel):
+class RetrieveMobileModel(BaseGetMobileModel):
     release_date: date
     brand: dict
     photos: list
+    is_liked_by_user: bool
+    is_saved_by_user: bool
     comments: list
     props: dict
     input_props: dict

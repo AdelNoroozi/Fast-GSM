@@ -132,6 +132,7 @@ class MobileManager:
                           count: Optional[int], requesting_user_id: Optional[int] = None):
         from managers import LikeManager
         from managers import SaveManager
+        from managers import MobilePhotoManager
         query = mobile.select()
         if brand_id:
             query = MobileManager.filter_by_brand(query, brand_id)
@@ -147,6 +148,7 @@ class MobileManager:
         mobile_datas = []
         for mobile_instance in mobiles:
             mobile_data = dict(mobile_instance)
+            mobile_data["thumbnail"] = dict(await MobilePhotoManager.get_thumbnail_by_mobile(mobile_data["id"]))
             mobile_data["is_liked_by_user"] = await LikeManager.is_liked_by_user(mobile_data["id"], requesting_user_id)
             mobile_data["is_saved_by_user"] = await SaveManager.is_saved_by_user(mobile_data["id"], requesting_user_id)
             mobile_datas.append(mobile_data)
@@ -167,4 +169,3 @@ class MobileManager:
         mobile_ids = [s["mobile_id"] for s in likes]
         query = mobile.select().where(mobile.c.id.in_(mobile_ids))
         return await database.fetch_all(query)
-

@@ -24,3 +24,9 @@ class MobilePhotoManager:
             await database.execute(query)
             if is_thumbnail:
                 is_thumbnail = False
+
+    @staticmethod
+    async def get_thumbnail_by_mobile(mobile_id):
+        query = mobile_photo.select().where(mobile_photo.c.mobile_id == mobile_id, mobile_photo.c.is_thumbnail == True)
+        photo = await database.fetch_one(query)
+        return MobilePhotoRetrieveModel(**photo)
