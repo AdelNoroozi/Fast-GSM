@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from starlette.requests import Request
 
-from managers import UserManager, oauth2_scheme, is_superuser, is_authenticated
+from managers import UserManager, oauth2_scheme, is_superuser, is_authenticated, is_admin
 from schemas.request import RegisterModel, LoginModel, AddUserModel
 from schemas.response import UserListModel
 
@@ -24,6 +24,12 @@ async def login(user_data: LoginModel):
 async def add_admin(admin_data: AddUserModel):
     admin = await UserManager.add_admin(admin_data.model_dump())
     return {"admin": admin}
+
+
+@router.post("/add-blog_author/", status_code=201, dependencies=[Depends(oauth2_scheme), Depends(is_admin)])
+async def add_blog_author(blog_author_data: AddUserModel):
+    blog_author = await UserManager.add_blog_author(blog_author_data.model_dump())
+    return {"blog_author": blog_author}
 
 
 @router.get("/users/", status_code=200, response_model=list[UserListModel],

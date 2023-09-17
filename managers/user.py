@@ -37,6 +37,11 @@ class UserManager:
         return await UserManager.register(admin_data, False)
 
     @staticmethod
+    async def add_blog_author(blog_author_data):
+        blog_author_data["role"] = RoleEnum.blog_author.name
+        return await UserManager.register(blog_author_data, False)
+
+    @staticmethod
     async def get_user_list(requesting_user):
         query = user.select()
         if requesting_user["role"] == RoleEnum.admin:
