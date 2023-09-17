@@ -1,4 +1,5 @@
 from schemas.response.brand import BrandListModel
+from schemas.response.mobile_photo import MobilePhotoRetrieveModel
 from schemas.response.mobile import RetrieveMobileModel
 from schemas.response.mobile import CreateResponseMobileModel
 from schemas.response.mobile import BaseGetMobileModel
