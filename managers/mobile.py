@@ -85,10 +85,10 @@ class MobileManager:
     @staticmethod
     async def create_mobile(mobile_data):
         from managers import MobilePropManager
-        print(mobile_data)
+        from managers import MobilePhotoManager
         props = mobile_data.pop("props")
         input_props = mobile_data.pop("input_props")
-        print(mobile_data)
+        photos = mobile_data.pop("photos")
         try:
             query = mobile.insert().values(**mobile_data)
             id_ = await database.execute(query)
@@ -96,6 +96,7 @@ class MobileManager:
             raise HTTPException(400, "mobile already exists")
         except ForeignKeyViolationError:
             raise HTTPException(404, "brand does not exist")
+        await MobilePhotoManager.create_photos(id_, photos)
         await MobilePropManager.create_selectable_prop_values(id_, props)
         await MobilePropManager.create_input_prop_values(id_, input_props)
         return await MobileManager.retrieve_mobile(id_, None)

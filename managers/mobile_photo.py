@@ -10,3 +10,17 @@ class MobilePhotoManager:
         photo_objects = await database.fetch_all(query)
         photos = [MobilePhotoRetrieveModel(**photo) for photo in photo_objects]
         return photos
+
+    @staticmethod
+    async def create_photos(mobile_id, photos):
+        is_thumbnail = True
+        for photo in photos:
+            query = mobile_photo.insert().values({
+                "mobile_id": mobile_id,
+                "photo_url": photo["photo_url"],
+                "alt_text": photo["alt_text"],
+                "is_thumbnail": is_thumbnail
+            })
+            await database.execute(query)
+            if is_thumbnail:
+                is_thumbnail = False
