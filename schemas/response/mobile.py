@@ -25,6 +25,7 @@ class CreateResponseMobileModel(BaseGetMobileModel):
 class RetrieveMobileModel(ListMobileModel):
     release_date: date
     brand: dict
+    photos: list
     comments: list
     props: dict
     input_props: dict

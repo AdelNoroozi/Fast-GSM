@@ -106,6 +106,7 @@ class MobileManager:
         from managers import SaveManager
         from managers import MobilePropManager
         from managers import CommentManager
+        from managers import MobilePhotoManager
         try:
             query = mobile.select().where(mobile.c.id == mobile_id)
             mobile_instance = await database.fetch_one(query)
@@ -116,6 +117,7 @@ class MobileManager:
         await MobileManager.update_mobile_views(mobile_instance["id"])
         mobile_data = dict(mobile_instance)
         mobile_data["brand"] = dict(await BrandManager.get_brand_by_id(mobile_data["brand_id"]))
+        mobile_data["photos"] = await MobilePhotoManager.get_photos_by_mobile(mobile_id)
         mobile_data["is_liked_by_user"] = await LikeManager.is_liked_by_user(mobile_id, requesting_user_id)
         mobile_data["is_saved_by_user"] = await SaveManager.is_saved_by_user(mobile_id, requesting_user_id)
         mobile_data["comments"] = await CommentManager.get_comments_by_mobile(mobile_id)

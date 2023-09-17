@@ -90,7 +90,6 @@ class MobilePropManager:
         input_prop_values = await database.fetch_all(value_query)
         input_props = {}
         for input_prop_value in input_prop_values:
-            print(dict(input_prop_value))
             prop_query = mobile_prop.select().where(mobile_prop.c.id == input_prop_value["prop_id"])
             prop = await database.fetch_one(prop_query)
             input_props[prop["prop"]] = input_prop_value["value"]
