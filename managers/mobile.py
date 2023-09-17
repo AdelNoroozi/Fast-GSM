@@ -7,6 +7,7 @@ from sqlalchemy import desc, column, or_, and_
 from db import database
 from managers import BrandManager
 from models import mobile, brand
+from utils import SETS
 
 
 class MobileManager:
@@ -129,11 +130,15 @@ class MobileManager:
     @staticmethod
     async def list_mobile(brand_id: Optional[id], search_str: Optional[str], prop_ids: Optional[list[int]],
                           order_column: Optional[str], price_gt: Optional[float], price_lt: Optional[float],
-                          requesting_user_id: Optional[int] = None):
+                          set_: Optional[SETS], requesting_user_id: Optional[int] = None):
         from managers import LikeManager
         from managers import SaveManager
         from managers import MobilePhotoManager
         query = mobile.select()
+        if set_ == SETS.liked:
+            query = await MobileManager.get_liked_mobiles(query, requesting_user_id)
+        elif set_ == SETS.saved:
+            query = await MobileManager.get_saved_mobiles(query, requesting_user_id)
         if brand_id:
             query = MobileManager.filter_by_brand(query, brand_id)
         if search_str:
@@ -155,17 +160,15 @@ class MobileManager:
         return mobile_datas
 
     @staticmethod
-    async def get_saved_mobiles(user_id):
+    async def get_saved_mobiles(query, user_id):
         from managers import SaveManager
         saves = await SaveManager.get_saves_by_user(user_id)
         mobile_ids = [s["mobile_id"] for s in saves]
-        query = mobile.select().where(mobile.c.id.in_(mobile_ids))
-        return await database.fetch_all(query)
+        return query.where(mobile.c.id.in_(mobile_ids))
 
     @staticmethod
-    async def get_liked_mobiles(user_id):
+    async def get_liked_mobiles(query, user_id):
         from managers import LikeManager
         likes = await LikeManager.get_likes_by_user(user_id)
         mobile_ids = [s["mobile_id"] for s in likes]
-        query = mobile.select().where(mobile.c.id.in_(mobile_ids))
-        return await database.fetch_all(query)
+        return query.where(mobile.c.id.in_(mobile_ids))
