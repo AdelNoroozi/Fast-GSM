@@ -10,3 +10,4 @@ class ArticleManager:
         id_ = await database.execute(query)
         article_data = dict(await database.fetch_one(article.select().where(article.c.id == id_)))
         article_data["author"] = requesting_user["public_name"]
+        return article_data
