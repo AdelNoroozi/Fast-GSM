@@ -12,5 +12,5 @@ async def list_props():
 
 
 @router.post("/props/", status_code=201, dependencies=[Depends(oauth2_scheme), Depends(is_admin)])
-async def list_props(prop_data: CreatePropModel):
+async def create_props(prop_data: CreatePropModel):
     return await MobilePropManager.create_props(prop_data.model_dump())
