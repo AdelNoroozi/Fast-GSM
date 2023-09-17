@@ -9,3 +9,4 @@ from schemas.request.mobile_prop import CreatePropModel
 from schemas.request.mobile_prop import InputPropModel
 from schemas.request.mobile_photo import MobilePhotoModel
 from schemas.request.mobile import CreateMobileModel
+from schemas.request.article import CreateArticleModel
