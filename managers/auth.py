@@ -92,3 +92,9 @@ async def is_observer(request: Request):
     user = request.state.user
     if not user or (not user["role"] == RoleEnum.observer):
         raise HTTPException(403, "you don't have permission")
+
+
+async def is_blog_author(request: Request):
+    user = request.state.user
+    if not user or (not user["role"] == RoleEnum.blog_author):
+        raise HTTPException(403, "you don't have permission")

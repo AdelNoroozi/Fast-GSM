@@ -3,6 +3,7 @@ from managers.auth import ProtectedHTTPBearer
 from managers.auth import is_admin
 from managers.auth import is_superuser
 from managers.auth import is_observer
+from managers.auth import is_blog_author
 from managers.auth import oauth2_scheme
 from managers.auth import is_authenticated
 from managers.brand import BrandManager
