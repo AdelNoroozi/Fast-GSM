@@ -1,4 +1,5 @@
 from db import database
+from managers import UserManager
 from models import article
 
 
@@ -15,4 +16,11 @@ class ArticleManager:
     @staticmethod
     async def list_articles():
         query = article.select()
-        return await database.fetch_all(query)
+        articles = await database.fetch_all(query)
+        article_list = []
+        for article_obj in articles:
+            article_data = dict(article_obj)
+            author_id = article_data.pop("author_id")
+            article_data["author"] = (await UserManager.get_user_by_id(author_id))["public_name"]
+            article_list.append(article_data)
+        return article_list
