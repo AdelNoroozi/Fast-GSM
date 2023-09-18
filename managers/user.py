@@ -49,3 +49,11 @@ class UserManager:
         elif requesting_user["role"] == RoleEnum.observer:
             query = query.where(user.c.id == requesting_user["id"])
         return await database.fetch_all(query)
+
+    @staticmethod
+    async def get_user_by_id(user_id):
+        query = user.select().where(user.c.id == user_id)
+        user_obj = await database.fetch_one(query)
+        if not user_obj:
+            raise HTTPException(404, "user not found")
+        return user_obj
