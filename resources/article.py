@@ -19,3 +19,9 @@ async def create_article(article: CreateArticleModel, request: Request):
 async def list_articles():
     articles = await ArticleManager.list_articles()
     return paginate(articles)
+
+
+@router.get("/articles/{article_id}/", status_code=200, response_model=RetrieveArticleModel)
+async def retrieve_article(article_id: int):
+    article = await ArticleManager.retrieve_article(article_id)
+    return article

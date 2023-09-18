@@ -24,3 +24,11 @@ class ArticleManager:
             article_data["author"] = (await UserManager.get_user_by_id(author_id))["public_name"]
             article_list.append(article_data)
         return article_list
+
+    @staticmethod
+    async def retrieve_article(article_id):
+        query = article.select().where(article.c.id == article_id)
+        article_data = dict(await database.fetch_one(query))
+        author_id = article_data.pop("author_id")
+        article_data["author"] = (await UserManager.get_user_by_id(author_id))["public_name"]
+        return article_data
