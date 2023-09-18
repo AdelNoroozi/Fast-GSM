@@ -8,4 +8,5 @@ from schemas.response.user import UserListModel
 from schemas.response.comment import BaseCommentModel
 from schemas.response.comment import RetrieveCommentModel
 from schemas.response.mobile_prop import MobilePropModel
+from schemas.response.article import GetArticleModel
 from schemas.response.article import RetrieveArticleModel
