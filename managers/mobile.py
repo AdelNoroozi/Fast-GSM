@@ -172,3 +172,34 @@ class MobileManager:
         likes = await LikeManager.get_likes_by_user(user_id)
         mobile_ids = [s["mobile_id"] for s in likes]
         return query.where(mobile.c.id.in_(mobile_ids))
+
+    @staticmethod
+    async def compare_mobiles(mobile_id1, mobile_id2):
+        from managers import MobilePropManager
+        from managers import MobilePhotoManager
+        try:
+            query1 = mobile.select().where(mobile.c.id == mobile_id1)
+            query2 = mobile.select().where(mobile.c.id == mobile_id2)
+            mobile_instance1 = await database.fetch_one(query1)
+            mobile_instance2 = await database.fetch_one(query2)
+        except Exception as e:
+            raise e
+        if not mobile_instance1 or not mobile_instance2:
+            raise HTTPException(404, "mobile not found")
+        props_mobile1 = await MobilePropManager.get_props_by_mobile(mobile_id1)
+        props_mobile2 = await MobilePropManager.get_props_by_mobile(mobile_id2)
+        common_props = set(props_mobile1.keys()) & set(props_mobile2.keys())
+        unique_props_mobile1 = set(props_mobile1.keys()) - common_props
+        unique_props_mobile2 = set(props_mobile2.keys()) - common_props
+        compare_dict = {prop: (props_mobile1[prop], props_mobile2[prop]) for prop in common_props}
+        compare_dict["thumbnails"] = [
+            dict(await MobilePhotoManager.get_thumbnail_by_mobile(mobile_id1)),
+            dict(await MobilePhotoManager.get_thumbnail_by_mobile(mobile_id2)),
+                                      ]
+        compare_dict["prices"] = [mobile_instance1["price"], mobile_instance2["price"]]
+        comparison_result = {
+            "compare_dict": compare_dict,
+            "unique_props_mobile1": {prop: props_mobile1[prop] for prop in unique_props_mobile1},
+            "unique_props_mobile2": {prop: props_mobile2[prop] for prop in unique_props_mobile2}
+        }
+        return comparison_result

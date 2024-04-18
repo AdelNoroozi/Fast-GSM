@@ -1,7 +1,9 @@
 from typing import Optional, List
-from fastapi_pagination import Page, paginate
+
 from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi_pagination import Page, paginate
 from starlette.requests import Request
+
 from managers import MobileManager, oauth2_scheme, is_admin
 from schemas.request import CreateMobileModel
 from schemas.response import RetrieveMobileModel, ListMobileModel
@@ -32,6 +34,12 @@ async def list_mobile(request: Request, set_: Optional[SETS] = SETS.all, brand: 
 @router.post("/mobiles/", status_code=201, dependencies=[Depends(oauth2_scheme), Depends(is_admin)])
 async def create_mobile(mobile_data: CreateMobileModel):
     mobile = await MobileManager.create_mobile(mobile_data.model_dump())
+    return mobile
+
+
+@router.post("/mobiles/compare/", status_code=200, dependencies=[Depends(oauth2_scheme)])
+async def compare_mobiles(mobile_id1: int, mobile_id2: int):
+    mobile = await MobileManager.compare_mobiles(mobile_id1=mobile_id1, mobile_id2=mobile_id2)
     return mobile
 
 
