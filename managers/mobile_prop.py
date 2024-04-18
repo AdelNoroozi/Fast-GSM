@@ -20,7 +20,7 @@ class MobilePropManager:
 
     @staticmethod
     async def get_props():
-        query = mobile_prop.select()
+        query = mobile_prop.select(mobile_prop.c.is_selectable == True)
         prop_keys = await database.fetch_all(query)
         props = {"brand": await BrandManager.list_brand_for_filter()}
         for prop_key in prop_keys:
@@ -94,4 +94,3 @@ class MobilePropManager:
             prop = await database.fetch_one(prop_query)
             input_props[prop["prop"]] = input_prop_value["value"]
         return input_props
-
